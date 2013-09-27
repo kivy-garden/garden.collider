@@ -13,6 +13,8 @@ class Collide2DPoly(object):
     ''' Collide2DPoly checks whether a point is within a polygon defined by a
     list of corner points.
 
+    Based on http://alienryderflex.com/polygon/
+
     For example, a simple triangle::
     >>> collider = Collide2DPoly([10., 10., 20., 30., 30., 10.],\
                                  pre_compute=True)
