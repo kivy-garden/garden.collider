@@ -8,7 +8,7 @@ For example, using the Collide2DPoly class we can test whether points fall
 within a general polygon, e.g. a simple triangle::
 
     >>> collider = Collide2DPoly([10., 10., 20., 30., 30., 10.],\
-                                 pre_compute=True)
+                                 cache=True)
     >>> (0.0, 0.0) in collider
     False
     >>> (20.0, 20.0) in collider
