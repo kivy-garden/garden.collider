@@ -29,7 +29,7 @@ cdef class Collide2DPoly(object):
 
     For example, a simple triangle::
     >>> collider = Collide2DPoly([10., 10., 20., 30., 30., 10.],\
-                                 pre_compute=True)
+                                 cache=True)
     >>> (0.0, 0.0) in collider
     False
     >>> (20.0, 20.0) in collider
