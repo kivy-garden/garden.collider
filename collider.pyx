@@ -1,9 +1,12 @@
 '''
 Collider
-======
+========
 
 The collider module contains classes which can be used to test membership
 of a point in some space. See individual class documentation for details.
+
+.. image:: _static/Screenshot.png
+    :align: right
 
 To use it you first have to cython the code. To do that, cd to the directory
 containing collider.pyx and::
@@ -28,12 +31,13 @@ cdef class Collide2DPoly(object):
     Based on http://alienryderflex.com/polygon/
 
     For example, a simple triangle::
-    >>> collider = Collide2DPoly([10., 10., 20., 30., 30., 10.],\
-                                 cache=True)
-    >>> (0.0, 0.0) in collider
-    False
-    >>> (20.0, 20.0) in collider
-    True
+
+        >>> collider = Collide2DPoly([10., 10., 20., 30., 30., 10.],
+        ... cache=True)
+        >>> (0.0, 0.0) in collider
+        False
+        >>> (20.0, 20.0) in collider
+        True
 
     The constructor takes a list of x,y points in the form of [x1,y1,x2,y2...]
     as the points argument. These points define the corners of the
@@ -124,7 +128,7 @@ cdef class Collide2DPoly(object):
                             odd ^= y * cmultiple[i] + cconstant[i] < x
                         j = i
                     self.cspace[y * width + x] = odd
-    
+
     def __dealloc__(self):
         free(self.cpoints)
         free(self.cconstant)

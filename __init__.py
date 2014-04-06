@@ -1,7 +1,8 @@
-from collider import Collide2DPoly
 
 
 __all__ = ('Collide2DPoly', )
+
+from collider import Collide2DPoly
 
 
 if __name__ == '__main__':
