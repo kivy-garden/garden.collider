@@ -1,6 +1,8 @@
 garden.collider
 ===============
 
+See http://kivy-garden.github.io/garden.collider/index.html for html docs.
+
 The collider module contains classes which can be used to test membership
 of a point in some space. See individual class documentation for details.
 
