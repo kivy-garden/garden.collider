@@ -8,11 +8,14 @@ of a point in some space. See individual class documentation for details.
 .. image:: _static/Screenshot.png
     :align: right
 
-To use it you first have to cython the code. To do that, cd to the directory
+To use it you first have to cythonize the code. To do that, cd to the directory
 containing collider.pyx and::
 
     python setup.py build_ext --inplace
 '''
+
+__all__ = ('Collide2DPoly', 'CollideEllipse')
+
 
 cimport cython
 from libc.stdlib cimport malloc, free
@@ -21,7 +24,6 @@ cdef extern from "math.h":
     double floor(double val)
     double ceil(double val)
 
-__all__ = ('Collide2DPoly', )
 
 
 cdef class Collide2DPoly(object):
@@ -136,7 +138,7 @@ cdef class Collide2DPoly(object):
         free(self.cspace)
 
     @cython.cdivision(True)
-    def collide_point(Collide2DPoly self, float x, float y):
+    def collide_point(Collide2DPoly self, double x, double y):
         points = self.cpoints
         if points is NULL or not (self.min_x <= x <= self.max_x and
                                   self.min_y <= y <= self.max_y):
@@ -155,6 +157,75 @@ cdef class Collide2DPoly(object):
                 odd ^= y * self.cmultiple[i] + self.cconstant[i] < x
             j = i
         return odd
+
+    def __contains__(self, point):
+        return self.collide_point(*point)
+
+
+cdef class CollideEllipse(object):
+    ''' CollideEllipse checks whether a point is within an ellipse or circle
+    aligned with the Cartesian plain, as defined by a center point and a major
+    and minor radius. That is, the major and minor axes are along the x and y
+    axes.
+
+    :Parameters:
+        `x`: float
+            the x position of the center of the ellipse
+        `y`: float
+            the y position of the center of the ellipse
+        `rx`: float
+            the radius of the ellipse along the x direction
+        `ry`: float
+            the radius of the ellipse along the y direction
+
+    For example::
+
+        >>> collider = CollideEllipse(x=0, y=10, rx=10, ry=10)
+        >>> (0, 10) in collider
+        True
+        >>> (0, 0) in collider
+        True
+        >>> (10, 10) in collider
+        True
+        >>> (11, 10) in collider
+        False
+        >>>
+        >>> collider = CollideEllipse(x=0, y=10, rx=20, ry=10)
+        >>> (20, 10) in collider
+        True
+        >>> (21, 10) in collider
+        False
+    '''
+
+    cdef double x
+    cdef double y
+    cdef double _rx_squared
+    cdef double _ry_squared
+    cdef int _circle
+    cdef int _zero_circle
+
+    @cython.cdivision(True)
+    def __cinit__(self, double x, double y, double rx, double ry, **kwargs):
+        if rx < 0. or ry < 0.:
+            raise ValueError('The radii must be zero or positive')
+
+        self.x = x
+        self.y = y
+        self._circle = rx == ry
+        self._rx_squared = rx ** 2
+        self._ry_squared = ry ** 2
+        self._zero_circle = self._rx_squared == 0 or self._ry_squared == 0
+
+    @cython.cdivision(True)
+    def collide_point(self, double x, double y):
+        if self._zero_circle:
+            return False
+
+        if self._circle:
+            return (x - self.x) ** 2 + (y - self.y) ** 2 <= self._rx_squared
+
+        return ((x - self.x) ** 2 / self._rx_squared +
+                (y - self.y) ** 2 / self._ry_squared <= 1.)
 
     def __contains__(self, point):
         return self.collide_point(*point)

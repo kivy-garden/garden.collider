@@ -1,8 +1,9 @@
 
 
-__all__ = ('Collide2DPoly', )
+__all__ = ('Collide2DPoly', 'CollideEllipse')
+__version__ = '0.1-dev'
 
-from collider import Collide2DPoly
+from collider import Collide2DPoly, CollideEllipse
 
 
 if __name__ == '__main__':
