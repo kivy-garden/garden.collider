@@ -363,8 +363,8 @@ cdef class CollideEllipse(object):
             return (0, 0, 0, 0)
 
         if not self.angle or self._circle:
-            return (int(floor(-self.rx)), int(floor(-self.ry)),
-                    int(ceil(self.rx)), int(ceil(self.ry)))
+            return (int(floor(-self.rx + self.x)), int(floor(-self.ry + self.y)),
+                    int(ceil(self.rx + self.x)), int(ceil(self.ry + self.y)))
 
         # from http://stackoverflow.com/a/88020/778140
         phi = -self.angle
