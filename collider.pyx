@@ -368,12 +368,12 @@ cdef class CollideEllipse(object):
 
         # from http://stackoverflow.com/a/88020/778140
         phi = -self.angle
-        t = -self.ry * tan(phi) / self.rx
+        t = atan2(-self.ry * tan(phi), self.rx)
         x1 = self.x + self.rx * cos(t) * cos(phi) - self.ry * sin(t) * sin(phi)
         t += PI
         x2 = self.x + self.rx * cos(t) * cos(phi) - self.ry * sin(t) * sin(phi)
 
-        t = self.ry * tan(PI / 2. - phi) / self.rx
+        t = atan2(self.ry * tan(PI / 2. - phi), self.rx)
         y1 = self.y + self.ry * sin(t) * cos(phi) + self.rx * cos(t) * sin(phi)
         t += PI
         y2 = self.y + self.ry * sin(t) * cos(phi) + self.rx * cos(t) * sin(phi)
