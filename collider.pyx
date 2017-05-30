@@ -157,7 +157,7 @@ cdef class Collide2DPoly(object):
 
     @cython.cdivision(True)
     cpdef collide_point(self, double x, double y):
-        points = self.cpoints
+        cdef double *points = self.cpoints
         if points is NULL or not (self.min_x <= x <= self.max_x and
                                   self.min_y <= y <= self.max_y):
             return False
@@ -198,6 +198,34 @@ cdef class Collide2DPoly(object):
         '''
         return (int(floor(self.min_x)), int(floor(self.min_y)),
                 int(ceil(self.max_x)), int(ceil(self.max_y)))
+
+    def get_area(self):
+        cdef int x, y
+        cdef double count = 0
+
+        for x in range(int(floor(self.min_x)), int(ceil(self.max_x)) + 1):
+            for y in range(int(floor(self.min_y)), int(ceil(self.max_y)) + 1):
+                if self.collide_point(x, y):
+                    count += 1
+        return count
+
+    def get_centroid(self):
+        cdef double x = 0
+        cdef double y = 0
+
+        if self.cpoints is NULL:
+            return 0, 0
+
+        for i in range(self.count):
+            x += self.cpoints[2 * i]
+            y += self.cpoints[2 * i + 1]
+
+        x = x / float(self.count)
+        y = y / float(self.count)
+
+        if self.cspace is not NULL:
+            return x + self.min_x, y + self.min_y
+        return x , y
 
 
 cdef list convert_to_poly(points, int segments):
@@ -268,6 +296,16 @@ cdef class CollideBezier(object):
         if self.line_collider is None:
             return [0, 0, 0, 0]
         return self.line_collider.bounding_box()
+
+    def get_area(self):
+        if self.line_collider is None:
+            return 0
+        return self.line_collider.get_area()
+
+    def get_centroid(self):
+        if self.line_collider is None:
+            return 0, 0
+        return self.line_collider.get_centroid()
 
 
 cdef class CollideEllipse(object):
@@ -413,3 +451,9 @@ cdef class CollideEllipse(object):
 
         px, py = self.rx * cos(theta), self.ry * sin(theta)
         return ((x - px) ** 2 + (y - py) ** 2) ** .5
+
+    def get_area(self):
+        return PI * self.rx * self.ry
+
+    def get_centroid(self):
+        return self.x, self.y
